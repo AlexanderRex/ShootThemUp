@@ -11,7 +11,6 @@
 #include "Components/STUWeaponComponent.h"
 #include "Components/CapsuleComponent.h"
 
-
 DEFINE_LOG_CATEGORY_STATIC(BaseCharacterLog, All, All);
 
 // Sets default values
@@ -34,7 +33,6 @@ ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
     HealthTextComponent->SetupAttachment(GetRootComponent());
 
     WeaponComponent = CreateDefaultSubobject<USTUWeaponComponent>("WeaponComponent");
-
 }
 
 // Called when the game starts or when spawned
@@ -44,20 +42,19 @@ void ASTUBaseCharacter::BeginPlay()
     check(HealthComponent);
     check(HealthTextComponent);
     check(GetCharacterMovement());
-    
+    check(GetMesh());
+
     OnHealthChanged(HealthComponent->GetHealth());
     HealthComponent->OnDeath.AddUObject(this, &ASTUBaseCharacter::OnDeath);
     HealthComponent->OnHealthChanged.AddUObject(this, &ASTUBaseCharacter::OnHealthChanged);
 
     LandedDelegate.AddDynamic(this, &ASTUBaseCharacter::OnGroundLanded);
-    
 }
 
 // Called every frame
 void ASTUBaseCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input
@@ -86,13 +83,11 @@ void ASTUBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
     PlayerInputComponent->BindAction("Reload", IE_Pressed, WeaponComponent, &USTUWeaponComponent::Reload);
 }
 
-
 void ASTUBaseCharacter::MoveForward(float Amount)
 {
     IsMovingForward = Amount > 0.0f;
     if (Amount == 0.0f) return;
     AddMovementInput(GetActorForwardVector(), Amount);
-    
 }
 
 void ASTUBaseCharacter::MoveRight(float Amount)
@@ -101,7 +96,7 @@ void ASTUBaseCharacter::MoveRight(float Amount)
     AddMovementInput(GetActorRightVector(), Amount);
 }
 
-void ASTUBaseCharacter::OnStartRunning() 
+void ASTUBaseCharacter::OnStartRunning()
 {
     WantsToRun = true;
 }
@@ -113,7 +108,7 @@ void ASTUBaseCharacter::OnStopRunning()
 
 bool ASTUBaseCharacter::IsRunning() const
 {
-    return WantsToRun&&IsMovingForward&&!GetVelocity().IsZero();
+    return WantsToRun && IsMovingForward && !GetVelocity().IsZero();
 }
 
 float ASTUBaseCharacter::GetMovementDirection() const
@@ -129,7 +124,7 @@ float ASTUBaseCharacter::GetMovementDirection() const
 void ASTUBaseCharacter::OnDeath()
 {
     UE_LOG(BaseCharacterLog, Display, TEXT("Player %s is dead"), *GetName());
-    PlayAnimMontage(DeathAnimMontage);
+    // PlayAnimMontage(DeathAnimMontage);
 
     GetCharacterMovement()->DisableMovement();
 
@@ -141,6 +136,9 @@ void ASTUBaseCharacter::OnDeath()
     }
     GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
     WeaponComponent->StopFire();
+
+    GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+    GetMesh()->SetSimulatePhysics(true);
 }
 
 void ASTUBaseCharacter::OnHealthChanged(float Health)
@@ -159,4 +157,3 @@ void ASTUBaseCharacter::OnGroundLanded(const FHitResult& Hit)
     UE_LOG(BaseCharacterLog, Display, TEXT("Final damage: %f"), FinalDamage);
     TakeDamage(FinalDamage, FDamageEvent{}, nullptr, nullptr);
 }
-
