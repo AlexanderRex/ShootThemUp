@@ -4,13 +4,14 @@
 #include "Engine/World.h"
 #include "DrawDebugHelpers.h"
 #include "Weapon/Components/STUWeaponFXComponent.h"
+#include "NiagaraComponent.h"
 
 ASTURifleWeapon::ASTURifleWeapon()
 {
     WeaponFXComponent = CreateDefaultSubobject<USTUWeaponFXComponent>("WeaponFXComponent");
 }
 
-void ASTURifleWeapon::BeginPlay() 
+void ASTURifleWeapon::BeginPlay()
 {
     Super::BeginPlay();
     check(WeaponFXComponent);
@@ -18,6 +19,7 @@ void ASTURifleWeapon::BeginPlay()
 
 void ASTURifleWeapon::StartFire()
 {
+    InitMuzzleFX();
     GetWorldTimerManager().SetTimer(ShotTimerHandle, this, &ASTURifleWeapon::MakeShot, TimeBetweenShots, true);
     MakeShot();
 }
@@ -25,6 +27,7 @@ void ASTURifleWeapon::StartFire()
 void ASTURifleWeapon::StopFire()
 {
     GetWorldTimerManager().ClearTimer(ShotTimerHandle);
+    SetMuzzleFXVisibility(false);
 }
 
 void ASTURifleWeapon::MakeShot()
@@ -55,8 +58,8 @@ void ASTURifleWeapon::MakeShot()
     if (HitResult.bBlockingHit)
     {
         MakeDamage(HitResult);
-        //DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Red, false, 3.0f, 0, 3.0f);
-        //DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.0f, 24, FColor::Red, false, 5.0f);
+        // DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Red, false, 3.0f, 0, 3.0f);
+        // DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.0f, 24, FColor::Red, false, 5.0f);
         WeaponFXComponent->PlayImpactFX(HitResult);
     }
     else
@@ -85,4 +88,22 @@ void ASTURifleWeapon::MakeDamage(const FHitResult& HitResult)
     const auto DamagedActor = HitResult.GetActor();
     if (!DamagedActor) return;
     DamagedActor->TakeDamage(DamageAmount, FDamageEvent(), GetPlayerConroller(), this);
+}
+
+void ASTURifleWeapon::InitMuzzleFX()
+{
+    if (!MuzzleFXComponent)
+    {
+        MuzzleFXComponent = SpawnMuzzleFX();
+    }
+    SetMuzzleFXVisibility(true);
+}
+
+void ASTURifleWeapon::SetMuzzleFXVisibility(bool Visibile)
+{
+    if (MuzzleFXComponent)
+    {
+        MuzzleFXComponent->SetPaused(!Visibile);
+        MuzzleFXComponent->SetVisibility(Visibile, true);
+    }
 }
