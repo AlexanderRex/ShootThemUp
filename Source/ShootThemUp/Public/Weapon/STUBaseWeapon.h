@@ -11,6 +11,7 @@ class USkeletalMeshComponent;
 class UNiagaraSystem;
 class UNiagaraComponent;
 
+
 UCLASS()
 class SHOOTTHEMUP_API ASTUBaseWeapon : public AActor
 {
