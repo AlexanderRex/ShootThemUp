@@ -28,7 +28,7 @@ EBTNodeResult::Type USTUNextLocationTask::ExecuteTask(UBehaviorTreeComponent& Ow
     {
         auto CenterActor = Cast<AActor>(Blackboard->GetValueAsObject(CenterActorKey.SelectedKeyName));
         if (!CenterActor) return EBTNodeResult::Failed;
-        Location = CenterActor->GetActorLocation();
+        Location = CenterActor->GetActorLocation(); 
     }
 
     const auto Found = NavSys->GetRandomReachablePointInRadius(Location, Radius, NavLocation);
