@@ -6,13 +6,11 @@
 #include "GameFramework/Character.h"
 #include "STUBaseCharacter.generated.h"
 
-
 class UCameraComponent;
 class USpringArmComponent;
 class USTUHealthComponent;
 class UTextRenderComponent;
 class USTUWeaponComponent;
-
 
 UCLASS()
 class SHOOTTHEMUP_API ASTUBaseCharacter : public ACharacter
@@ -39,7 +37,6 @@ protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
     USTUWeaponComponent* WeaponComponent;
 
-
     UPROPERTY(EditDefaultsOnly, Category = "Animation")
     UAnimMontage* DeathAnimMontage;
 
@@ -63,10 +60,12 @@ public:
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
     UFUNCTION(BlueprintCallable, Category = "Movement")
-    bool IsRunning() const;  
+    bool IsRunning() const;
 
     UFUNCTION(BlueprintCallable, Category = "Movement")
     float GetMovementDirection() const;
+
+    virtual void OnDeath();
 
 private:
     bool WantsToRun = false;
@@ -76,12 +75,10 @@ private:
     void MoveForward(float Amount);
 
     void MoveRight(float Amount);
-    
+
     void OnStartRunning();
 
     void OnStopRunning();
-
-    void OnDeath();
 
     void OnHealthChanged(float Health, float HealthDelta);
 
