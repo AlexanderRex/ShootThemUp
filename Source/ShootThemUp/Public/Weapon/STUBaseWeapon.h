@@ -11,7 +11,6 @@ class USkeletalMeshComponent;
 class UNiagaraSystem;
 class UNiagaraComponent;
 
-
 UCLASS()
 class SHOOTTHEMUP_API ASTUBaseWeapon : public AActor
 {
@@ -31,6 +30,7 @@ public:
     bool CanReload() const;
 
     bool TryToAddAmmo(int32 ClipAmount);
+    bool IsAmmoEmpty() const;
 
     FWeaponUIData GetUIData() const { return UIData; }
     FAmmoData GetAmmoData() const { return CurrentAmmo; }
@@ -49,7 +49,7 @@ protected:
     FAmmoData DefaultAmmo{15, 10, false};
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
-    FWeaponUIData UIData; 
+    FWeaponUIData UIData;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
     UNiagaraSystem* MuzzleFX;
@@ -74,14 +74,13 @@ protected:
 
     void DecreaseAmmo();
 
-    bool IsAmmoEmpty() const;
     bool IsClipEmpty() const;
     bool IsAmmoFull() const;
 
     void LogAmmo();
 
     UNiagaraComponent* SpawnMuzzleFX();
-    
+
 private:
     FAmmoData CurrentAmmo;
 };
