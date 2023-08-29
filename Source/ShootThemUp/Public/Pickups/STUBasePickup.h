@@ -23,6 +23,7 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup")
     float RespawnTime = 5.0f;
 
+
     virtual void BeginPlay() override;
 
     virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;

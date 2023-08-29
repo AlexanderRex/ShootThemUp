@@ -33,7 +33,6 @@ void ASTUBasePickup::NotifyActorBeginOverlap(AActor* OtherActor)
         PickupWasTaken();
     }
 
-    PickupWasTaken();
 }
 
 void ASTUBasePickup::Tick(float DeltaTime)
